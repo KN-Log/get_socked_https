@@ -10,7 +10,7 @@
 #include <openssl/ssl.h>
 
 
-#define GET "GET /wiki/HTTP HTTP/1.1\r\nHost: ru.wikipedia.org\r\nUser-Agent: OpenSSL\r\nAccept: text/html\r\n Connection: close\r\n\r\n"
+#define GET "GET /wiki/HTTP HTTP/1.1\r\nHost: ru.wikipedia.org\r\nUser-Agent: OpenSSL\r\nAccept: text/html\r\nConnection: close\r\n\r\n"
 
 void socket_send(SSL* conn,int* sockfd);
 void socket_recv(SSL* conn);
@@ -30,17 +30,17 @@ int main(){
 	
 	if(sockfd < 0){
 		
-		perror("don't open socket on line 29\n");
+		perror("don't open socket on line 29\n\n");
 		exit(0);
 	}else{
-		printf("open socket! [OK]\n");
+		printf("open socket! \033[1;32m[OK]\033[0m\n\n");
 	}
 
 	if(connect(sockfd,(struct sockaddr *) &addr,sizeof(addr))<0){                 	             
-		  perror("not connect on line 36!\n");
+		  perror("not connect on line 36!\n\n");
                   exit(1);
         }else{
-                  printf("connect! [OK]\n");
+                  printf("connect! \033[1;32m[OK]\033[0m\n\n");
         }
 
 	SSL_load_error_strings();
@@ -52,7 +52,7 @@ int main(){
 	
 	if(SSL_connect(conn)!=1){
 
-		perror("not SSL connect on line 53!\n");
+		perror("not SSL connect on line 53!\n\n");
 		socket_close(conn,&sockfd);
 		abort();
 	}
@@ -78,12 +78,12 @@ void socket_close(SSL* conn,int* sockfd){
 void socket_send(SSL* conn, int* sockfd){
 	
 	char* request = GET; 
-	printf("%s\r\n", request);//"GET /wiki/HTTP HTTP/1.1\r\nHost: ru.wikipedia.org\r\nUser-Agent: OpenSSL\r\nAccept: text/html\r\n Connection: close\r\n\r\n";
+	printf("%s\r\n", request);
 	
 	if(SSL_write(conn,request,strlen(request))>0){
-		printf("GET send from %d  [OK]\n\n",*sockfd);
+		printf("GET send from %d \033[1;32m[OK]\033[0m\n\n",*sockfd);
 	}else{
-		printf("Error!\n");
+		printf("Error!\n\n");
 	}
 }
 
@@ -92,14 +92,14 @@ void socket_recv(SSL* conn){
 
 	char buff[1024];
 	int len=0;	
+	int i=0;	
 	do{
 
 		len=SSL_read(conn, buff, sizeof(buff));
-		
-		for(int i=0; i<len; i++){
+		for(i=0; i<len; i++){
 			printf("%c",buff[i]);
 		}
-	}while(len!=0);
-}
 
+	}while(i<len);
+}
 #undef GET
